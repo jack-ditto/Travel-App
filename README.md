@@ -16,8 +16,8 @@ Currently this app has a functional user interface implemented with React and a 
 
 ### TODO
 
-[ ] - Fix / possibly re-design UI/UX
-[ ] - Finish testing back-end server
-[ ] - Integrate front-end and back-end
-    [ ] - Figure out media uploads
-[ ] - Additional final testing
+- [ ] Fix / possibly re-design UI/UX
+- [ ] Finish testing back-end server
+- [ ] Integrate front-end and back-end
+    - [ ] Figure out media uploads
+- [ ] Additional final testing
