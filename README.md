@@ -21,3 +21,4 @@ Currently this app has a functional user interface implemented with React and a 
 - [ ] Integrate front-end and back-end
     - [ ] Figure out media uploads
 - [ ] Additional final testing
+- [ ] Honestly probably built a website to market / provide download space
