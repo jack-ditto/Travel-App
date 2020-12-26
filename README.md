@@ -13,3 +13,11 @@ Within Electron, this app is built with React JS as the "front-end." The Electro
 ### Current progess
 
 Currently this app has a functional user interface implemented with React and a function back-end server. The back-end componet of the application is still being tested and has yet to be integrated with the front-end component. 
+
+### TODO
+
+[ ] - Fix / possibly re-design UI/UX
+[ ] - Finish testing back-end server
+[ ] - Integrate front-end and back-end
+    [ ] - Figure out media uploads
+[ ] - Additional final testing
