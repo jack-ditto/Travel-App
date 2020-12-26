@@ -10,6 +10,24 @@ The container for this app is Electron, a framework maintained by Github which a
 
 Within Electron, this app is built with React JS as the "front-end." The Electron app also hosts a Node.js server with Express.js for back-end features and leverages a SQLite database for data storage. 
 
+### How to run
+
+```
+git clone https://github.com/jack-ditto/Travel-App.git
+```
+```
+npm install
+```
+To start the React app:
+```
+npm run start
+```
+To start the Electron container:
+```
+npm run electron-start
+```
+
+
 ### Current progess
 
 Currently this app has a functional user interface implemented with React and a function back-end server. The back-end componet of the application is still being tested and has yet to be integrated with the front-end component. 
