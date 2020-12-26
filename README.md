@@ -14,8 +14,7 @@ Within Electron, this app is built with React JS as the "front-end." The Electro
 
 ```
 git clone https://github.com/jack-ditto/Travel-App.git
-```
-```
+cd Travel-App
 npm install
 ```
 To start the React app:
