@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React from "react";
+import ReactDOM from "react-dom";
+import Intro from "./intro/Intro";
+import NewTrip from "./new-trip/NewTrip";
+import Trip from "./trip/Trip";
+
+class ViewController extends React.Component {
+  /**
+   * Constructor
+   *
+   * @param {*} props
+   */
+  constructor(props) {
+    super(props);
+    this.state = { view: "intro", currTripId: "none" };
+  }
+
+  /**
+   * Callback to update the view
+   *
+   * @param {string} newView a string representing the desired view (intro, new-trip)
+   */
+  setNewView = (newView) => {
+    this.setState({ view: newView });
+  };
+
+  /**
+   * Callback to update the view to a trip. Basically the same as setNewView but allows an 
+   * ID to be set for the trip view.
+   * 
+   * @param {*} newView 
+   * @param {*} id 
+   */
+  setTripView = (newView, id) => {
+    this.setState({ view: newView, currTripId: id });
+  };
+
+  render() {
+    if (this.state.view === "intro") {
+      return (
+        <Intro
+          setNewView={this.setNewView}
+          setTripView={this.setTripView}
+        ></Intro>
+      );
+    }
+
+    if (this.state.view === "new-trip") {
+      return (
+        <NewTrip
+          setNewView={this.setNewView}
+          setTripView={this.setTripView}
+        ></NewTrip>
+      );
+    }
+
+    if (this.state.view === "trip") {
+      return (
+        <Trip
+          setNewView={this.setNewView}
+          currTripId={this.state.currTripId}
+        ></Trip>
+      );
+    }
+  }
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  return <ViewController></ViewController>;
 }
 
 export default App;
