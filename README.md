@@ -29,7 +29,7 @@ npm run electron-start
 
 ### Current progess
 
-Currently this app has a functional user interface implemented with React and a function back-end server. The back-end componet of the application is still being tested and has yet to be integrated with the front-end component. 
+Currently this app has a functional user interface implemented with React and a functional back-end server. The back-end componet of the application is still being tested and has yet to be integrated with the front-end component. 
 
 ### TODO
 
