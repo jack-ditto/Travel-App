@@ -21,9 +21,9 @@ app.use(morgan("dev"));
 var sqlite3 = require("sqlite3").verbose();
 
 // Electron environment
-// let db_path = "./server/database.db";
+let db_path = "./server/database.db";
 // Node (for testing)
-let db_path = "./database.db";
+// let db_path = "./database.db";
 
 var db = new sqlite3.Database(db_path);
 
@@ -40,9 +40,11 @@ app.post("/addTrip", (req, res) => {
   // - Start date and end date are correct
 
   let data = req.body;
+  console.log(data);
 
   // Checks if values exist
   if (!data.name || !data.startDate || !data.endDate || !data.image) {
+    res.status(400);
     res.send({ status: "failed", msg: "Missing POST data." });
     return;
   }
@@ -64,6 +66,9 @@ app.post("/addTrip", (req, res) => {
     return;
   }
 
+  sd = `${sd.getMonth()}/${sd.getDate()}/${sd.getFullYear()}`;
+  ed = `${ed.getMonth()}/${ed.getDate()}/${ed.getFullYear()}`;
+
   // SQL string
   add_trip_sql = `
     INSERT INTO trips (name,startDate, endDate, image)
@@ -71,18 +76,14 @@ app.post("/addTrip", (req, res) => {
   `;
 
   // Run the query
-  db.run(
-    add_trip_sql,
-    [data.name, data.startDate, data.endDate, data.image],
-    (err) => {
-      if (err) {
-        res.status(500);
-        res.send({ status: "failed", error: err });
-      } else {
-        res.send({ status: "success" });
-      }
+  db.run(add_trip_sql, [data.name, sd, ed, data.image], (err) => {
+    if (err) {
+      res.status(500);
+      res.send({ status: "failed", error: err });
+    } else {
+      res.send({ status: "success" });
     }
-  );
+  });
 });
 
 /**
@@ -453,11 +454,115 @@ app.post("/addMedia", (req, res) => {
 });
 
 /**
+ * Get all of the entries in the media table. No parameters.
+ */
+app.get("/getMedias", (req, res) => {
+  let data = req.query;
+
+  get_medias_query = `
+    SELECT * FROM media;
+  `;
+
+  db.all(get_medias_query, (err, rows) => {
+    if (err) {
+      res.status(500);
+      res.send({
+        status: "failed",
+        msg: "An error occurred querying the database.",
+      });
+    } else {
+      res.send({ status: "success", rows: rows });
+    }
+  });
+});
+
+/**
+ * Get entries in the media table.
+ * Optional POST JSON parameters:
+ *  - id
+ *  - date
+ *  - trip_id
+ */
+app.get("/getMedia", (req, res) => {
+  let data = req.query;
+
+  // Set undefined values to null
+  if (!data.id) {
+    data.id = "null";
+  }
+  if (!data.date) {
+    data.date = "null";
+  }
+  if (!data.trip_id) {
+    data.trip_id = "null";
+  }
+
+  // All data is null
+  if (
+    !data ||
+    (data.id == "null" && data.date == "null" && data.trip_id == "null")
+  ) {
+    res.status(400);
+    res.send({ status: "failed", msg: "No valid parameters supplied." });
+    return;
+  }
+
+  get_media_sql = `
+    SELECT * FROM media
+    WHERE 
+      ((id = (?)) OR ((?) = "null"))
+      AND ((date = (?)) OR ((?) = "null"))
+      AND ((trip_id = (?)) OR ((?) = "null"))
+    ;
+  `;
+
+  db.all(
+    get_media_sql,
+    [data.id, data.id, data.date, data.date, data.trip_id, data.trip_id],
+    (err, rows) => {
+      if (err) {
+        res.status(500);
+        res.send({
+          status: "failed",
+          msg: "An error occurred querying the database.",
+        });
+      } else {
+        res.send({ status: "success", rows: rows });
+      }
+    }
+  );
+});
+
+/**
+ * Update media in media table. I don't think this endpoint is nescessary.
+ */
+app.get("updateMedia", (req, res) => {
+  res.send({ status: "failed", msg: "Endpoint not set up." });
+});
+
+/**
  * Delete media item from the media table.
  * Required JSON POST data:
  *  - id
  */
-app.post("/deleteMedia", (req, res) => {});
+app.post("/deleteMedia", (req, res) => {
+  let data = req.body;
+  // SQL string
+  delete_media_sql = `
+    DELETE FROM media
+    WHERE id = (?);
+  `;
+
+  // Run the query
+  db.run(delete_media_sql, [data.id], (err) => {
+    if (err) {
+      res.status(500);
+      res.send({ status: "failed", error: err });
+    } else {
+      res.send({ status: "success" });
+    }
+  });
+});
 
 // ADMIN ACTIONS
 
