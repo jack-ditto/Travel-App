@@ -34,8 +34,9 @@ Currently this app has a functional user interface implemented with React and a 
 ### TODO
 
 - [ ] Fix / possibly re-design UI/UX
-- [ ] Finish testing back-end server
+- [ ] Test UI and implement error messages
+- [x] Finish testing back-end server
 - [ ] Integrate front-end and back-end
-    - [ ] Figure out media uploads
+    - [x] Figure out media uploads
 - [ ] Additional final testing
 - [ ] Honestly probably built a website to market / provide download space
