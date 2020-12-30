@@ -18,10 +18,15 @@ class NewTrip extends React.Component {
    */
   constructor(props) {
     super(props);
+
+    this.imageSrc =
+      "https://www.civhc.org/wp-content/uploads/2018/10/question-mark.png";
+
     this.state = {
       destination: "",
       startDate: new Date(),
       endDate: new Date(),
+      image: this.imageSrc,
     };
   }
 
@@ -32,8 +37,12 @@ class NewTrip extends React.Component {
    * @param {string} name
    */
   handleDateChange = (date, name) => {
-    console.log(date);
-    this.setState({ ...this.state, [name]: date });
+    let d = new Date(date);
+
+    this.setState({
+      ...this.state,
+      [name]: `${d.getMonth()}/${d.getDate()}/${d.getFullYear()}`,
+    });
   };
 
   /**
@@ -47,6 +56,20 @@ class NewTrip extends React.Component {
   };
 
   /**
+   * Update the state on file select
+   *
+   * @param {*} event
+   */
+  onFileChange = (event) => {
+    let reader = new FileReader();
+    reader.onload = function (e) {
+      this.setState({ image: e.target.result });
+    }.bind(this);
+
+    reader.readAsDataURL(event.target.files[0]);
+  };
+
+  /**
    * Send a post request to the backend server to add a trip to the databaseƒ
    */
   addNewTrip = () => {
@@ -56,13 +79,14 @@ class NewTrip extends React.Component {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        destination: this.state.destination,
+        name: this.state.destination,
         startDate: this.state.startDate,
         endDate: this.state.endDate,
+        image: this.state.image,
       }),
     };
     fetch("http://localhost:8888/addTrip", requestOptions)
-      .then((response) => response.json())
+      .then((response) => console.log(response.json()))
       .then((data) => {
         console.log(data);
       });
@@ -132,20 +156,20 @@ class NewTrip extends React.Component {
                 }}
                 value={this.state.endDate}
                 onChange={(date) => this.handleDateChange(date, "endDate")}
-                name="endDate"
               />
             </MuiPickersUtilsProvider>
           </div>
           <div>
             <img
+              id="cover-photo-upload"
               className="new-trip--trip-card-photo trip-card-photo"
-              src="https://www.civhc.org/wp-content/uploads/2018/10/question-mark.png"
+              src={this.state.image}
             ></img>
             <p className="new-trip--trip-photo-desc">Current cover photo</p>
           </div>
           <Button variant="contained" component="label">
             Upload a cover photo
-            <input type="file" hidden />
+            <input onChange={this.onFileChange} type="file" hidden />
           </Button>
           <Button
             variant="contained"
