@@ -26,7 +26,7 @@ class Intro extends React.Component {
   /**
    * Handle action when go to trip button is clicked
    */
-  goClickedCallback = (tripId) => {
+  goClicked = (tripId) => {
     console.log(tripId);
     this.props.setTripView("trip", tripId);
   };
@@ -37,8 +37,11 @@ class Intro extends React.Component {
     if (data.status === "success") {
       console.log(data.rows);
       this.setState({ trips: data.rows });
-      // this.setState({trips: "test"});
     }
+  };
+
+  editTripClicked = (id) => {
+    this.props.setTripView("edit-trip", id);
   };
 
   render() {
@@ -49,6 +52,7 @@ class Intro extends React.Component {
       return (
         <Trip
           key={d.id}
+          id={d.id}
           name={d.name}
           startDate={
             this.dataReq.monthNames[sd.getMonth()] +
@@ -65,7 +69,9 @@ class Intro extends React.Component {
             ed.getFullYear()
           }
           photo={d.image}
-          gotoClickedCallback={() => this.goClickedCallback(tripId)}
+          gotoClickedCallback={() => this.goClicked(tripId)}
+          updateTrips={this.getTrips}
+          editTripClicked={this.editTripClicked}
         ></Trip>
       );
     });

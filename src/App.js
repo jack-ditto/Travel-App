@@ -4,6 +4,7 @@ import ReactDOM from "react-dom";
 import Intro from "./intro/Intro";
 import NewTrip from "./new-trip/NewTrip";
 import Trip from "./trip/Trip";
+import EditTrip from "./edit-trip/EditTrip";
 
 class ViewController extends React.Component {
   /**
@@ -26,13 +27,14 @@ class ViewController extends React.Component {
   };
 
   /**
-   * Callback to update the view to a trip. Basically the same as setNewView but allows an 
+   * Callback to update the view to a trip. Basically the same as setNewView but allows an
    * ID to be set for the trip view.
-   * 
-   * @param {*} newView 
-   * @param {*} id 
+   *
+   * @param {*} newView
+   * @param {*} id
    */
   setTripView = (newView, id) => {
+    console.log(id);
     this.setState({ view: newView, currTripId: id });
   };
 
@@ -61,6 +63,16 @@ class ViewController extends React.Component {
           setNewView={this.setNewView}
           currTripId={this.state.currTripId}
         ></Trip>
+      );
+    }
+
+    if (this.state.view === "edit-trip") {
+      return (
+        <EditTrip
+          setNewView={this.setNewView}
+          setTripView={this.setTripView}
+          currTripId={this.state.currTripId}
+        ></EditTrip>
       );
     }
   }

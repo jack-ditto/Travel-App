@@ -4,6 +4,7 @@ import Icon from "@material-ui/core/Icon";
 import Button from "@material-ui/core/Button";
 import { Typography } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
+import DataRequest from "../global/DataRequest";
 
 class Trip extends React.Component {
   /**
@@ -23,7 +24,25 @@ class Trip extends React.Component {
 
     // Cover pic
     this.photo = props.photo;
+    this.dataReq = new DataRequest();
   }
+
+  /**
+   * Call API to delete a trip
+   *
+   * @param {*} id
+   */
+  deleteClicked = (id) => {
+    let data = {
+      id: this.props.id,
+    };
+    this.dataReq.makePostReq(data, "deleteTrip");
+    this.props.updateTrips();
+  };
+
+  editClicked = (id) => {
+    this.props.editTripClicked(this.props.id);
+  };
 
   render() {
     return (
@@ -35,7 +54,7 @@ class Trip extends React.Component {
           </Typography>
           <span></span>
           <Typography className="intro--trip-card-title" variant="subtitle1">
-            <Box letterSpacing={.1}>
+            <Box letterSpacing={0.1}>
               {this.startDate} - {this.endDate}
             </Box>
           </Typography>
@@ -54,6 +73,7 @@ class Trip extends React.Component {
             size="small"
             variant="contained"
             className="intro--trip-card-edit-btn"
+            onClick={() => this.editClicked()}
           >
             Edit
           </Button>
@@ -62,6 +82,7 @@ class Trip extends React.Component {
             color="secondary"
             className="intro--trip-card-delete-btn"
             variant="contained"
+            onClick={this.deleteClicked}
           >
             Delete
           </Button>

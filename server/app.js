@@ -12,8 +12,8 @@ var cors = require("cors");
 const morgan = require("morgan");
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false, limit: "50mb" }));
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("dev"));
 
@@ -40,7 +40,6 @@ app.post("/addTrip", (req, res) => {
   // - Start date and end date are correct
 
   let data = req.body;
-  console.log(data);
 
   // Checks if values exist
   if (!data.name || !data.startDate || !data.endDate || !data.image) {
@@ -66,8 +65,8 @@ app.post("/addTrip", (req, res) => {
     return;
   }
 
-  sd = `${sd.getMonth()}/${sd.getDate()}/${sd.getFullYear()}`;
-  ed = `${ed.getMonth()}/${ed.getDate()}/${ed.getFullYear()}`;
+  // sd = `${sd.getMonth()}/${sd.getDate()}/${sd.getFullYear()}`;
+  // ed = `${ed.getMonth()}/${ed.getDate()}/${ed.getFullYear()}`;
 
   // SQL string
   add_trip_sql = `
@@ -76,14 +75,18 @@ app.post("/addTrip", (req, res) => {
   `;
 
   // Run the query
-  db.run(add_trip_sql, [data.name, sd, ed, data.image], (err) => {
-    if (err) {
-      res.status(500);
-      res.send({ status: "failed", error: err });
-    } else {
-      res.send({ status: "success" });
+  db.run(
+    add_trip_sql,
+    [data.name, sd.toString(), ed.toString(), data.image],
+    (err) => {
+      if (err) {
+        res.status(500);
+        res.send({ status: "failed", error: err });
+      } else {
+        res.send({ status: "success" });
+      }
     }
-  });
+  );
 });
 
 /**
@@ -191,6 +194,37 @@ app.get("/getTrip", (req, res) => {
  */
 app.post("/updateTrip", (req, res) => {
   let data = req.body;
+
+  // Checks if values exist
+  if (
+    !data.name ||
+    !data.startDate ||
+    !data.endDate ||
+    !data.image ||
+    !data.id
+  ) {
+    res.status(400);
+    res.send({ status: "failed", msg: "Missing POST data." });
+    return;
+  }
+
+  // Make sure dates make sense
+  var sd;
+  var ed;
+  try {
+    sd = new Date(data.startDate);
+    ed = new Date(data.endDate);
+  } catch (error) {
+    res.status(400);
+    res.send({ status: "failed", msg: "Could not interpret date." });
+    return;
+  }
+  if (sd >= ed) {
+    res.status(400);
+    res.send({ status: "failed", msg: "Invalid date range." });
+    return;
+  }
+
   // SQL string
   update_trip_sql = `
     UPDATE trips
@@ -205,7 +239,7 @@ app.post("/updateTrip", (req, res) => {
   // Run the query
   db.run(
     update_trip_sql,
-    [data.name, data.startDate, data.endDate, data.image, data.id],
+    [data.name, sd.toString(), ed.toString(), data.image, data.id],
     (err) => {
       if (err) {
         res.status(500);
