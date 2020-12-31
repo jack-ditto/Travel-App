@@ -3,6 +3,7 @@ import Icon from "@material-ui/core/Icon";
 import Trip from "./Trip";
 import Button from "@material-ui/core/Button";
 import { Typography } from "@material-ui/core";
+import DataRequest from "../global/DataRequest";
 
 class Intro extends React.Component {
   /**
@@ -12,6 +13,14 @@ class Intro extends React.Component {
    */
   constructor(props) {
     super(props);
+    this.dataReq = new DataRequest();
+    this.state = {
+      trips: [],
+    };
+  }
+
+  componentDidMount() {
+    this.getTrips();
   }
 
   /**
@@ -22,8 +31,44 @@ class Intro extends React.Component {
     this.props.setTripView("trip", tripId);
   };
 
+  getTrips = async () => {
+    let endpoint = "getTrips";
+    let data = await this.dataReq.makeGetReq({}, endpoint);
+    if (data.status === "success") {
+      console.log(data.rows);
+      this.setState({ trips: data.rows });
+      // this.setState({trips: "test"});
+    }
+  };
+
   render() {
     let tripId = 1;
+    const listTrips = this.state.trips.map((d) => {
+      let sd = new Date(d.startDate);
+      let ed = new Date(d.endDate);
+      return (
+        <Trip
+          key={d.id}
+          name={d.name}
+          startDate={
+            this.dataReq.monthNames[sd.getMonth()] +
+            " " +
+            sd.getDate() +
+            ", " +
+            sd.getFullYear()
+          }
+          endDate={
+            this.dataReq.monthNames[ed.getMonth()] +
+            " " +
+            ed.getDate() +
+            ", " +
+            ed.getFullYear()
+          }
+          photo={d.image}
+          gotoClickedCallback={() => this.goClickedCallback(tripId)}
+        ></Trip>
+      );
+    });
     return (
       <div className="intro-wrapper">
         <div className="title-wrapper">
@@ -44,35 +89,14 @@ class Intro extends React.Component {
         </Typography>
         <div className="intro--new-trip-wrapper"></div>
         <div className="info--trip-cards-wrapper">
-          {/* TODO: This is where we will fetch database and list app Trips */}
-          <Trip
+          {listTrips}
+          {/* <Trip
             name="Peru"
             startDate="January 24, 2020"
             endDate="January 30, 2020"
             photo="https://www.peru.travel/Contenido/AcercaDePeru/Imagen/en/6/0.0/Principal/Machu%20Picchu.jpg"
             gotoClickedCallback={() => this.goClickedCallback(tripId)}
-          ></Trip>
-          <Trip
-            name="Peru"
-            startDate="January 24, 2020"
-            endDate="January 30, 2020"
-            photo="https://www.peru.travel/Contenido/AcercaDePeru/Imagen/en/6/0.0/Principal/Machu%20Picchu.jpg"
-            gotoClickedCallback={() => this.goClickedCallback(tripId)}
-          ></Trip>
-          <Trip
-            name="Peru"
-            startDate="January 24, 2020"
-            endDate="January 30, 2020"
-            photo="https://www.peru.travel/Contenido/AcercaDePeru/Imagen/en/6/0.0/Principal/Machu%20Picchu.jpg"
-            gotoClickedCallback={() => this.goClickedCallback(tripId)}
-          ></Trip>
-          <Trip
-            name="Peru"
-            startDate="January 24, 2020"
-            endDate="January 30, 2020"
-            photo="https://www.peru.travel/Contenido/AcercaDePeru/Imagen/en/6/0.0/Principal/Machu%20Picchu.jpg"
-            gotoClickedCallback={() => this.goClickedCallback(tripId)}
-          ></Trip>
+          ></Trip> */}
         </div>
       </div>
     );
