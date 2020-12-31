@@ -2,13 +2,15 @@ import React from "react";
 import TextField from "@material-ui/core/TextField";
 import Icon from "@material-ui/core/Icon";
 import Button from "@material-ui/core/Button";
-
 import DateFnsUtils from "@date-io/date-fns";
+import Alert from "@material-ui/lab/Alert";
+
 import "date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from "@material-ui/pickers";
+import DataRequest from "../global/DataRequest";
 
 class NewTrip extends React.Component {
   /**
@@ -18,6 +20,7 @@ class NewTrip extends React.Component {
    */
   constructor(props) {
     super(props);
+    this.dataReq = new DataRequest();
 
     this.imageSrc =
       "https://www.civhc.org/wp-content/uploads/2018/10/question-mark.png";
@@ -28,6 +31,9 @@ class NewTrip extends React.Component {
       endDate: new Date(),
       image: this.imageSrc,
     };
+
+    this.error = false;
+    this.errorMsg = "";
   }
 
   /**
@@ -41,7 +47,8 @@ class NewTrip extends React.Component {
 
     this.setState({
       ...this.state,
-      [name]: `${d.getMonth()}/${d.getDate()}/${d.getFullYear()}`,
+      // [name]: `${d.getMonth()}/${d.getDate()}/${d.getFullYear()}`,
+      [name]: d,
     });
   };
 
@@ -72,24 +79,55 @@ class NewTrip extends React.Component {
   /**
    * Send a post request to the backend server to add a trip to the databaseƒ
    */
-  addNewTrip = () => {
-    // Simple POST request with a JSON body using fetch
-    console.log("Making request!");
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: this.state.destination,
-        startDate: this.state.startDate,
-        endDate: this.state.endDate,
-        image: this.state.image,
-      }),
+  addNewTrip = async () => {
+    let endpoint = "addTrip";
+    let data = {
+      name: this.state.destination,
+      startDate: this.state.startDate,
+      endDate: this.state.endDate,
+      image: this.state.image,
     };
-    fetch("http://localhost:8888/addTrip", requestOptions)
-      .then((response) => console.log(response.json()))
-      .then((data) => {
-        console.log(data);
-      });
+
+    this.error = false;
+    this.errorMsg = "";
+
+    // Input validation
+    if (this.state.endDate < this.state.startDate) {
+      this.error = true;
+      this.errorMsg = "Start date cannot be after end date.";
+    } else if (!this.state.destination) {
+      this.error = true;
+      this.errorMsg = "Destination cannot be blank.";
+    } else if (
+      this.state.endDate.getDate() === this.state.startDate.getDate() &&
+      this.state.endDate.getMonth() === this.state.startDate.getMonth() &&
+      this.state.endDate.getFullYear() === this.state.startDate.getFullYear()
+    ) {
+      this.error = true;
+      this.errorMsg = "Start and end dates cannot be the same.";
+    } else {
+      this.error = false;
+      this.errorMsg = "";
+    }
+
+    if (!this.error) {
+      await this.dataReq.makePostReq(data, endpoint);
+      this.props.setNewView("intro");
+    } else {
+      this.setState({ showAlert: true, alertMsg: this.errorMsg });
+    }
+  };
+
+  showAlertBox = () => {
+    if (this.state.showAlert) {
+      return (
+        <Alert className="alert-box" variant="filled" severity="error">
+          {this.state.alertMsg}
+        </Alert>
+      );
+    } else {
+      return "";
+    }
   };
 
   render() {
@@ -181,6 +219,7 @@ class NewTrip extends React.Component {
             Save your trip!
           </Button>
         </div>
+        {this.showAlertBox()}
       </div>
     );
   }

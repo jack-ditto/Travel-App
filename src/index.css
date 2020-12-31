@@ -386,3 +386,8 @@ html {
   width: 100px;
   height: 100px;
 }
+
+.alert-box {
+  width: 600px;
+  margin: 20px auto 0px auto;
+}
