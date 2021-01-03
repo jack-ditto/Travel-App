@@ -33,6 +33,8 @@ Currently this app has a functional user interface implemented with React and a 
 
 ### TODO
 
+#### Big stuff
+
 - [ ] Fix / possibly re-design UI/UX
 - [ ] Test UI and implement error messages
 - [x] Finish testing back-end server
@@ -40,3 +42,7 @@ Currently this app has a functional user interface implemented with React and a 
     - [x] Figure out media uploads
 - [ ] Additional final testing
 - [ ] Honestly probably built a website to market / provide download space
+
+#### Specific stuff
+- [ ] Add confirmation message when deleting a trip
+- [ ] Add format checking for trip cover photo uploads
